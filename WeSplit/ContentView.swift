@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  WeSplit
 //
-//  Created by Allan Odunga on 31/12/2022.
+//  Created by A11AN0.
 //
 
 import SwiftUI
@@ -16,6 +16,8 @@ struct ContentView: View {
             Text("Hello, world!")
         }
         .padding()
+        
+        //test
     }
 }
 
