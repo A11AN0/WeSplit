@@ -11,7 +11,8 @@ content view - contains the main UI for program, majority of
  heaps of different frameworks for work e.g.
  machine learning, audio playback, audio maniputation, etc.
  
- hold the option key and hover over to display info about method/ variable etc
+ hold the option key and hover over to d
+isplay info about method/ variable etc
  a question mark will appear
  
  OPTION + COMMAND + P } Important shortcut for resume of the canvas
@@ -35,10 +36,17 @@ import SwiftUI
 struct ContentView: View {
     @State private var checkAmount = 0.0;
     @State private var numberOfPeople = 2;
-    @State private var tipPercentage = 20;
+    @State private var tipPercentage = 0;
     
     let tipPercentages = [10, 15, 20, 25, 0]
     
+    var totalPerPerson: Double {
+        //calculate total per person here
+        let peopleCount = Double(numberOfPeople + 2)
+        let tipSelection = Double(tipPercentage)
+        let tipValue = (tipSelection/100) * checkAmount
+        return (checkAmount + tipValue)/peopleCount
+    }
     
     var body: some View {
         NavigationView {
@@ -49,16 +57,27 @@ struct ContentView: View {
                     .keyboardType(.decimalPad)
                     
                     Picker("Number of people", selection: $numberOfPeople) {
-                        ForEach(0..<100) {
+                        ForEach(2..<100) {
                             Text("\($0) people")
                         }
                     }
                     .pickerStyle(.navigationLink)
-                    
                 }
                 
                 Section {
-                    Text(checkAmount, format: .currency(code:
+                    Picker("Tip precentage", selection: $tipPercentage) {
+                        ForEach(tipPercentages, id: \.self) {
+                            Text($0, format: .percent)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                } header: {
+                    Text("How much of a tip do you want to leave?")
+                }
+                
+                
+                Section {
+                    Text(totalPerPerson, format: .currency(code:
                         Locale.current.currency?.identifier ?? "USD"))
                 }
                 
