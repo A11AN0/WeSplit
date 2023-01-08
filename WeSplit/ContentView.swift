@@ -37,24 +37,30 @@ struct ContentView: View {
     @State private var checkAmount = 0.0;
     @State private var numberOfPeople = 2;
     @State private var tipPercentage = 0;
+    @FocusState private var amountIsFocused:Bool;
     
-    let tipPercentages = [10, 15, 20, 25, 0]
+    //made local currency a property, to improve readability and allow for reusability
+    private let localCurrency: FloatingPointFormatStyle<Double>.Currency = .currency(code:
+        Locale.current.currency?.identifier  ?? "USD")
+    
+    
+    var grandTotal: Double {
+            let tipSelection = Double(tipPercentage)
+            let tipValue = checkAmount / 100 * tipSelection
+            return checkAmount + tipValue
+    }
     
     var totalPerPerson: Double {
-        //calculate total per person here
-        let peopleCount = Double(numberOfPeople + 2)
-        let tipSelection = Double(tipPercentage)
-        let tipValue = (tipSelection/100) * checkAmount
-        return (checkAmount + tipValue)/peopleCount
+        grandTotal / Double(numberOfPeople + 2)
     }
     
     var body: some View {
         NavigationView {
             Form {
                 Section {
-                    TextField("Amount", value: $checkAmount, format:
-                            .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    TextField("Amount", value: $checkAmount, format: localCurrency)
                     .keyboardType(.decimalPad)
+                    .focused($amountIsFocused)
                     
                     Picker("Number of people", selection: $numberOfPeople) {
                         ForEach(2..<100) {
@@ -66,24 +72,38 @@ struct ContentView: View {
                 
                 Section {
                     Picker("Tip precentage", selection: $tipPercentage) {
-                        ForEach(tipPercentages, id: \.self) {
+                        ForEach(0..<101) {
                             Text($0, format: .percent)
                         }
                     }
-                    .pickerStyle(.segmented)
                 } header: {
                     Text("How much of a tip do you want to leave?")
                 }
                 
+                Section {
+                    Text(grandTotal, format: localCurrency)
+                } header: {
+                    Text("Total Cheque amount")
+                }
                 
                 Section {
-                    Text(totalPerPerson, format: .currency(code:
-                        Locale.current.currency?.identifier ?? "USD"))
+                    Text(totalPerPerson, format: localCurrency)
+                } header: {
+                    Text("Amount per person")
                 }
                 
                 
             }
             .navigationTitle("WeSplit")
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    
+                    Button("Done") {
+                        amountIsFocused = false
+                    }
+                }
+            }
         }
     }
 }
