@@ -38,6 +38,7 @@ struct ContentView: View {
     @State private var numberOfPeople = 2;
     @State private var tipPercentage = 0;
     @FocusState private var amountIsFocused:Bool;
+    @State private var useRedText  = true;
     
     //made local currency a property, to improve readability and allow for reusability
     private let localCurrency: FloatingPointFormatStyle<Double>.Currency = .currency(code:
@@ -82,6 +83,7 @@ struct ContentView: View {
                 
                 Section {
                     Text(grandTotal, format: localCurrency)
+                        .foregroundColor(tipPercentage == 0 ? .red : .none)
                 } header: {
                     Text("Total Cheque amount")
                 }
